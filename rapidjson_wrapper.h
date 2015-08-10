@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
 
 Creator: liyangyao@gmail.com
 Date: 2015/4/20
@@ -16,8 +16,6 @@ Date: 2015/4/20
 #include <rapidjson/writer.h>
 #include <rapidjson/error/en.h>
 
-#pragma execution_character_set("utf-8")
-
 namespace json
 {
 namespace inner
@@ -28,12 +26,10 @@ public:
     explicit JsonObject(JsonObject* parent):
         m_parent(parent)
     {
-
     }
 
     virtual ~JsonObject()
     {
-
     }
 
     void putKey(const QString &k)
@@ -51,10 +47,7 @@ public:
         return m_parent;
     }
 
-    virtual void putValue(const QVariant &)
-    {
-
-    }
+    virtual void putValue(const QVariant &)=0;
 
 private:
     QString m_key;
@@ -68,9 +61,7 @@ public:
     explicit MapObject(JsonObject* parent):
         JsonObject(parent)
     {
-
     }
-
 
     virtual void putValue(const QVariant &v)
     {
@@ -93,7 +84,6 @@ public:
     explicit ListObject(JsonObject* parent):
         JsonObject(parent)
     {
-
     }
 
     virtual void putValue(const QVariant &v)
@@ -228,7 +218,6 @@ public:
         return true;
     }
 
-
 private:
     JsonObject* m_currentObject;
     QVariantMap m_map;
@@ -258,7 +247,6 @@ QVariantMap parse(const QByteArray &json)
     return parse(json, success);
 }
 
-//添加支持QString,QVariant
 class Serialize
 {
 public:
@@ -266,7 +254,6 @@ public:
         m_buffer(),
         m_writer(m_buffer)
     {
-
     }
 
     void startArray(const char* s=nullptr)
@@ -368,8 +355,8 @@ public:
     }
 
 private:
-    rapidjson::Writer<rapidjson::StringBuffer> m_writer;
     rapidjson::StringBuffer m_buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> m_writer;    
     Serialize& string(const QString& s)
     {
         QByteArray data = s.toUtf8();
@@ -386,11 +373,17 @@ private:
         }
         switch(v.type())
         {
+        case QVariant::Int:
+            m_writer.Int(v.toInt());
+            break;
         case QVariant::String:
             string(v.toString());
             break;
-        case QVariant::Int:
-            m_writer.Int(v.toInt());
+        case QVariant::Bool:
+            m_writer.Bool(v.toBool());
+            break;
+        case QVariant::Double:
+            m_writer.Double(v.toDouble());
             break;
         case QVariant::UInt:
             m_writer.Uint(v.toUInt());
@@ -401,17 +394,10 @@ private:
         case QVariant::ULongLong:
            m_writer.Uint64(v.toULongLong());
             break;
-        case QVariant::Bool:
-            m_writer.Bool(v.toBool());
-            break;
-        case QVariant::Double:
-            m_writer.Double(v.toDouble());
-            break;
         default:
             string(v.toString());
         }
         return *this;
-
     }
     Q_DISABLE_COPY(Serialize)
 };

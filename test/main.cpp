@@ -1,5 +1,5 @@
 #include <QCoreApplication>
-#include "rapidjson_wrapper.h"
+#include <rapidjson_wrapper.h>
 
 void testParse(const QByteArray &data)
 {
