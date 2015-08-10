@@ -2,6 +2,8 @@
 
 Qt easy use rapidjson(https://github.com/miloyip/rapidjson)
 
+parse to QVariantMap
+~~~~~~~~~~cpp
 void testParse(const QByteArray &data)
 {
     QVariantMap json = json::parse(data);
@@ -15,7 +17,10 @@ void testParse(const QByteArray &data)
     Q_ASSERT(array[1].toString()=="two");
     Q_ASSERT(array[2].isNull());
 }
+~~~~~~~~~~
 
+serialize to string
+~~~~~~~~~~cpp
 QByteArray testSerialize()
 {
     json::Serialize s;
@@ -36,3 +41,4 @@ QByteArray testSerialize()
 
     return QByteArray (s.getString());
 }
+~~~~~~~~~~
