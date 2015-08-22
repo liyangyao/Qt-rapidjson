@@ -5,8 +5,8 @@ Date: 2015/4/20
 
 ****************************************************************************/
 
-#ifndef RAPIDJSON_WRAPPER_H
-#define RAPIDJSON_WRAPPER_H
+#ifndef __RAPIDJSON_WRAPPER_H
+#define __RAPIDJSON_WRAPPER_H
 
 #include <string>
 #include <QVariant>
@@ -16,7 +16,7 @@ Date: 2015/4/20
 #include <rapidjson/writer.h>
 #include <rapidjson/error/en.h>
 
-namespace json
+namespace rapidjson
 {
 namespace inner
 {
@@ -225,27 +225,31 @@ private:
 };
 }
 
-QVariantMap parse(const QByteArray &json, bool &success)
+class Wrapper
 {
-    rapidjson::Reader reader;
-    inner::MessageHandler handler;
-    rapidjson::StringStream ss(json.constData());
-    success = reader.Parse(ss, handler);
-    if (!success)
+public:
+    static QVariantMap parse(const QByteArray &json, bool &success)
     {
-        rapidjson::ParseErrorCode e = reader.GetParseErrorCode();
-        size_t o = reader.GetErrorOffset();
-        qDebug()<<"error offset:"<<o;
-        qDebug()<<"Error: "<<rapidjson::GetParseError_En(e);
+        rapidjson::Reader reader;
+        inner::MessageHandler handler;
+        rapidjson::StringStream ss(json.constData());
+        success = reader.Parse(ss, handler);
+        if (!success)
+        {
+            rapidjson::ParseErrorCode e = reader.GetParseErrorCode();
+            size_t o = reader.GetErrorOffset();
+            qDebug()<<"error offset:"<<o;
+            qDebug()<<"Error: "<<rapidjson::GetParseError_En(e);
+        }
+        return handler.result();
     }
-    return handler.result();
-}
 
-QVariantMap parse(const QByteArray &json)
-{
-    bool success;
-    return parse(json, success);
-}
+    static QVariantMap parse(const QByteArray &json)
+    {
+        bool success;
+        return parse(json, success);
+    }
+};
 
 class Serialize
 {
